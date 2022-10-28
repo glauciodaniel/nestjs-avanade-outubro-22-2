@@ -1,9 +1,26 @@
 import { Injectable } from '@nestjs/common';
+import { users } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class UsersService {
-  async createUser(req): Promise<string> {
-    return 'Usuário criado com sucesso!';
+  constructor(private prisma: PrismaService) {}
+
+  async createUser(data): Promise<users> {
+    const { name, email, password } = data;
+
+    const user = await this.prisma.users.create({
+      data: {
+        name,
+        email,
+        password,
+      },
+    });
+
+    if (!user) {
+      throw new Error('Erro ao criar usuário');
+    }
+    return user;
   }
 
   async findAll() {

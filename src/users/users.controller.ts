@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './dto/createUser.dto';
 import { UpdateUserDTO } from './dto/updateUser.dto';
+import { users } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
@@ -18,7 +19,7 @@ export class UsersController {
 
   //criar
   @Post()
-  async createUser(@Body() req: CreateUserDTO): Promise<string> {
+  async createUser(@Body() req: CreateUserDTO): Promise<users> {
     return this.usersService.createUser(req);
   }
   //listar todos  localhost:3000/users
