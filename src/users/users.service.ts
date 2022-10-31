@@ -12,16 +12,8 @@ export class UsersService {
         email,
       },
     });
-    if (user) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Email já cadastrado',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    return false;
+
+    return user ? true : false;
   }
 
   async createUser(data): Promise<users> {
