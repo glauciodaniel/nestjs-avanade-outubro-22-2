@@ -41,5 +41,16 @@ export class EmailService {
         <h1>${msg}</h1>
         Somente especialistas.`,
     };
+
+    try {
+      const result = await transporter.sendMail(mailOptions);
+      if (!result.reject) {
+        return { message: 'Mensagem enviada com sucesso!' };
+      } else {
+        return { message: 'Erro ao enviar mensagem!' };
+      }
+    } catch (error) {
+      return { message: error.message };
+    }
   }
 }
