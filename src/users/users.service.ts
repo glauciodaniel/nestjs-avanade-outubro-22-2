@@ -2,9 +2,13 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
+import { EmailService } from '../email/email.service';
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   // findUnique é um método do prisma que retorna um registro único, que contém a constraint unique.
   // findFirst é um método do prisma que retorna o primeiro registro que satisfaz a condição.
@@ -52,6 +56,17 @@ export class UsersService {
           password: await this.crypto(password),
         },
       });
+
+      if (
+        await this.emailService.sendEmail(
+          email,
+          'Bem vindo ao sistema',
+          'Seja muito bem vindo',
+          {},
+        )
+      ) {
+        console.log('Email, enviado com sucesso!');
+      }
 
       if (!user) {
         throw new Error('Erro ao criar usuário.');
