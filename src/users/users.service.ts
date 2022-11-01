@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { users } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
@@ -33,6 +33,12 @@ export class UsersService {
     return user ? true : false;
   }
 
+  async crypto(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
+  }
+
   async createUser(data): Promise<users> {
     const { name, email, password } = data;
 
@@ -43,7 +49,7 @@ export class UsersService {
         data: {
           name,
           email,
-          password,
+          password: await this.crypto(password),
         },
       });
 
@@ -96,7 +102,7 @@ export class UsersService {
     return { msg: `Usuário ${updatedUser.name} atualizado com sucesso!` };
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<object> {
     const user = await this.getUserById(id);
 
     const deletedUser = await this.prisma.users.delete({
