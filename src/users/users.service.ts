@@ -96,6 +96,22 @@ export class UsersService {
 
     const { name, email, password } = req;
 
+    //verificando se o e-mail está disponível.
+    if (email) {
+      const checkEmail = await this.prisma.users.findMany({
+        where: {
+          AND: [{ email: email }, { id: { not: Number(id) } }],
+        },
+      });
+
+      if (checkEmail.length > 0) {
+        throw new HttpException(
+          'E-mail já está sendo utilizado.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
     const updatedUser = await this.prisma.users.update({
       where: {
         id: Number(id),
